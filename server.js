@@ -5,8 +5,8 @@ const server = app.listen(3000, () => {
     console.log('server is running on port', server.address().port);
 });
 
-const db = require("./app/models");
-db.mongoose.connect(`mongodb://${process.env.DB_HOSTNAME}:${process.env.DB_PORT}:${process.env.DB_NAME}`)
+const db = require("./config/mongo-db");
+db.mongoose.connect(process.env.MONGODB_ADDON_URI)
     .then(() => {
         console.log("Connection réussie");
     })

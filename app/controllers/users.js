@@ -1,17 +1,23 @@
 const makeValidation = require('@withvoid/make-validation')
-module.exports = {
-    onGetAllUsers: async (req, res) => {
-        try {
-            const users = await UserModel.getUsers();
-            return res.status(200).json({ success: true, users });
-        } catch (error) {
-            return res.status(500).json({ success: false, error: error })
-        }
-    },
+const {
+    createUser,
+    getUserByPseudo
+} = require('./../repository/users-repository')
+const types = require("@withvoid/make-validation/lib/validationTypes");
+const { userTypes } = require('./../models/user-model')
 
-    onGetUserById: async (req, res) => {
+const checks = {
+    pseudo: {type: types.string, options: {empty: false}},
+    email: {type: types.string, options: {empty: false}},
+    password: {type: types.string, options: {empty: false}},
+    type: {type: types.enum, options: {enum: userTypes, empty: false}},
+};
+
+module.exports = {
+
+    onGetUserByPseudo: async (req, res) => {
         try {
-            const user = await UserModel.getUserById(req.params.id);
+            const user = await getUserByPseudo(req.params.id);
             return res.status(200).json({ success: true, user });
         } catch (error) {
             return res.status(500).json({ success: false, error: error })
@@ -20,18 +26,17 @@ module.exports = {
 
     onCreateUser: async (req, res) => {
         try {
-            const validation = makeValidation(types => ({
-                payload: req.body,
-                checks: {
-                    pseudo: { type: types.string },
-                    email: { type: types.string },
-                    password: { type: types.string },
-                }
-            }));
+            const validation = makeValidation(types => {
+                return ({
+                    payload: req.body,
+                    checks: checks
+                });
+            });
             if (!validation.success) return res.status(400).json(validation);
 
-            const { firstName, lastName, type } = req.body;
-            const user = await UserModel.createUser(firstName, lastName, type);
+            const request = req.body;
+            const user = await createUser(request);
+            console.log(user)
             return res.status(200).json({ success: true, user });
         } catch (error) {
             return res.status(500).json({ success: false, error: error })

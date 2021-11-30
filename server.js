@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
-const userRouter = require("./routes/users.js");
-const indexRouter = require("./routes/index.js");
+const userRouter = require("./app/routes/users.js");
+const indexRouter = require("./app/routes/index.js");
 const dotenv = require('dotenv').config()
 
 const app = express();
@@ -28,7 +28,7 @@ server.on("listening", () => {
 });
 
 
-const db = require("./config/mongo-db");
+const db = require("./app/config/mongo-db");
 db.mongoose.connect(process.env.MONGODB_ADDON_URI)
     .then(() => {
         console.log("Connection réussie");

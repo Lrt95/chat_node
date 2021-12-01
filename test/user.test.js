@@ -6,7 +6,7 @@
  * @requires module:./models
  */
 const {request, url} = require("./config/launcher")
-const {prepareReqWithToken, expectedStatus, getBodyRes, expectExcept} = require("./config/testHelper")
+const {prepareReqWithCookie, expectedStatus, getBodyRes, expectExcept} = require("./config/testHelper")
 const {user} = require("./models");
 
 /**
@@ -91,7 +91,7 @@ describe('User', () => {
             type: 'ADMIN',
             __v: ''
         }
-        const response = await prepareReqWithToken(user, url + "update-users")
+        const response = await prepareReqWithCookie(user, url + "update-users")
             .send(userData);
         expectedStatus(response, 201)
         expect(getBodyRes(response).pseudo).toBe(userData.pseudo)
@@ -114,7 +114,7 @@ describe('User', () => {
             type: 'ADMIN',
             __v: ''
         }
-        const response = await prepareReqWithToken(user, url + "update-users")
+        const response = await prepareReqWithCookie(user, url + "update-users")
             .send(userData);
         expectedStatus(response, 201)
         expect(getBodyRes(response).pseudo).toBe(userData.pseudo)
@@ -137,7 +137,7 @@ describe('User', () => {
             type: 'ADMIN',
             __v: ''
         }
-        const response = await prepareReqWithToken(user, url + "update-users")
+        const response = await prepareReqWithCookie(user, url + "update-users")
             .send(userData);
         expectedStatus(response, 201)
         expect(getBodyRes(response).pseudo).toBe(userPseudo)

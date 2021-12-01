@@ -18,7 +18,7 @@ const server = http.createServer(app);
  * Our app listen port
  * @type {number}
  */
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3050;
 server.listen(PORT, () => {
     console.log("started " + PORT);
 });

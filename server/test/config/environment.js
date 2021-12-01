@@ -2,7 +2,7 @@
  * This module requires {@link module:../config/MemoryDataBaseServer}.
  * @requires module:../config/MemoryDataBaseServer
  */
-const MemoryDatabaseServer = require('../config/MemoryDataBaseServer');
+const MemoryDatabaseServer = require('./MemoryDataBaseServer');
 const NodeEnvironment = require('jest-environment-node');
 
 /**

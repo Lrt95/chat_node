@@ -9,87 +9,86 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import {setSignIn} from "../../request/userRequest";
-
-const theme = createTheme();
+import jsCookie from "js-cookie"
+import {useNavigate} from "react-router-dom";
 
 export default function SignIn() {
+    let navigate = useNavigate();
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const test = {
+        const user = {
             login: data.get('login'),
             password: data.get('password'),
         }
-        let response = await setSignIn(test)
-        console.log(test)
-        console.log(response)
+        setSignIn(user).then(response => {
+            if (response.success) {
+                jsCookie.set('token-user', response.token)
+                navigate("/room")
+            } else {
+                console.log(JSON.stringify(response.error) || JSON.stringify(response.errors))
+            }
+        })
     };
 
     return (
-        <ThemeProvider theme={theme}>
-            <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Typography component="h1" variant="h5">
-                        Sign in
-                    </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="login"
-                            label="Email Address or User Name"
-                            name="login"
-                            autoComplete="login"
-                            autoFocus
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                        />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Sign In
-                        </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    Forgot password?
-                                </Link>
-                            </Grid>
-                            <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
-                            </Grid>
+        <Container component="main" maxWidth="xs">
+            <CssBaseline/>
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography component="h1" variant="h5">
+                    Sign in
+                </Typography>
+                <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="login"
+                        label="Email Address or User Name"
+                        name="login"
+                        autoComplete="login"
+                        autoFocus
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+                    />
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{mt: 3, mb: 2}}
+                    >
+                        Sign In
+                    </Button>
+                    <Grid container>
+                        <Grid item xs>
+                            <Link href="#" variant="body2">
+                                Forgot password?
+                            </Link>
                         </Grid>
-                    </Box>
+                        <Grid item>
+                            <Link href="/signup" variant="body2">
+                                {"Don't have an account? Sign Up"}
+                            </Link>
+                        </Grid>
+                    </Grid>
                 </Box>
-            </Container>
-        </ThemeProvider>
+            </Box>
+        </Container>
     );
 }

@@ -3,7 +3,6 @@ import Cookies from "universal-cookie"
 
 async function postUser(data, url) {
     return await axios.post(url, data).then(result => {
-        console.log(result)
         return result.data
     }).catch(
         err => {
@@ -17,8 +16,8 @@ async function postUser(data, url) {
     )
 }
 
-async function updateUser(data, url, config = {}) {
-    return await axios.post(url, data, config).then(result => {
+async function updateUser(data, url, config = {withCredentials: true}) {
+    return await axios.post(url, data, {withCredentials: true}).then(result => {
         return result.data
     }).catch(
         err => {

@@ -36,7 +36,7 @@ async function getMessage(message) {
  * @function
  * @memberOf Services
  * @name addMessage
- * @param {object} message - user to add, should be really similar to UserModel {@link '../models/userModel'}.
+ * @param {object} message - message to add.
  * @returns {Promise<{code: number, body: {error: string}}|{code: number, body: {error: *}}|{code: number, body: *}>}
  */
 async function addMessage(message) {
@@ -51,7 +51,7 @@ async function addMessage(message) {
  * @function
  * @memberOf Services
  * @name updateMessage
- * @param {object} message - user's data
+ * @param {object} message - message's data
  * @returns {Promise<{code: number, body: {error: string}}|{code: number, body: *}>}
  */
 async function updateMessage(message) {
@@ -67,7 +67,7 @@ async function updateMessage(message) {
  * @function
  * @memberOf Services
  * @name deleteMessage
- * @param {object} message - user to delete, should be really similar to UserModel {@link '../models/userModel'}.
+ * @param {object} message - message to delete.
  * @returns {Promise<{code: number, body: {error: string}}|{code: number, body: {error: *}}|{code: number, body: *}>}
  */
 async function deleteMessage(message) {

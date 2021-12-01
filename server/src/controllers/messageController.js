@@ -29,6 +29,11 @@ const checksDeleteMessage = {
     id: {type: types.string, options: {empty: false}},
 };
 
+const checksGetMessage = {
+    id: {type: types.string, options: {empty: false}},
+};
+
+
 //region get
 /**
  * Get Message on our app, saved in mongoDb
@@ -43,12 +48,12 @@ const checksDeleteMessage = {
 exports.getMessage = async (req, res, next) => {
     const validation = makeValidation(types => {
         return ({
-            payload: req.body,
-            checks: checksMessage
+            payload: req.params,
+            checks: checksGetMessage
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-    const message = req.body;
+    const message = req.params;
     const response = emptyRequest(message) ? emptyRequest(message) : await getMessage(message)
     return res.status(response.code).send(response.body)
 };

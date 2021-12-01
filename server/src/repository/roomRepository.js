@@ -21,8 +21,8 @@ const RoomModel = mongoose.model('rooms', roomSchema)
  * @returns {Promise<{success: *}|{error: Error.ValidationError | {[p: string]: ValidatorError | CastError} | number}>}
  */
 async function getRoomById(roomData) {
-    return await RoomModel.findOne({_id: roomData._id}, { "__v": 0} )
-        .populate({path: 'messages', match: {id_room: roomData._id}})
+    return await RoomModel.findOne({_id: roomData}, { "__v": 0} )
+        .populate({path: 'messages', match: {id_room: roomData}})
         .lean()
         .exec()
         .then(result => {
@@ -121,7 +121,7 @@ async function updateRoomById(data, update) {
  * @returns {Promise<{success: *}|{error: Error.ValidationError | {[p: string]: ValidatorError | CastError} | number}>}
  */
 async function deleteRoomById(roomData) {
-    return await RoomModel.deleteOne({_id: roomData._id}, { "__v": 0} )
+    return await RoomModel.deleteOne({_id: roomData}, { "__v": 0} )
         .lean()
         .exec()
         .then(result => {

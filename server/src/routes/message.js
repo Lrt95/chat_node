@@ -6,12 +6,12 @@
  * @requires module:./const
  */
 const { getMessage, createMessage, updateMessage, deleteMessage} = require("../controllers/messageController");
-const {authenticateTokenAdmin} = require("../middlewares/middleware")
+const {authenticateTokenAdmin, authenticateToken} = require("../middlewares/middleware")
 const {url} = require("./const");
 
 module.exports = (app) => {
-    app.get(url + "message/:id", getMessage);
-    app.post(url + "message", createMessage);
+    app.get(url + "message/:id", authenticateToken, getMessage);
+    app.post(url + "message", authenticateToken, createMessage);
     app.put(url + "update-message", authenticateTokenAdmin, updateMessage);
     app.delete(url + "delete-message", authenticateTokenAdmin, deleteMessage);
 };

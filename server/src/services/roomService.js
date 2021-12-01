@@ -88,4 +88,4 @@ async function deleteRoom(room) {
 }
 //endregion
 
-module.exports = {addMessage, getMessage, updateMessage, deleteMessage};
+module.exports = {getAllRooms, getRoom, addRoom, updateRoom, deleteRoom};

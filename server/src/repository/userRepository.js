@@ -116,12 +116,10 @@ async function updateUserById(data, update) {
  * @returns {Promise<{success: *}|{error: Error.ValidationError | {[p: string]: ValidatorError | CastError} | number}>}
  */
 async function deleteUserById(userData) {
-    console.log(userData)
     return await UserModel.deleteOne({_id: userData.id}, { "__v": 0} )
         .lean()
         .exec()
         .then(result => {
-            console.log(result)
             return {success: result}
         })
         .catch(err => {return {error: err.errors}});

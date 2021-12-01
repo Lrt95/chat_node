@@ -54,12 +54,12 @@ exports.getAllRooms = async (req, res, next) => {
 exports.getRoom = async (req, res, next) => {
     const validation = makeValidation(types => {
         return ({
-            payload: req.body,
+            payload: req.params,
             checks: checksRoom
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-    const room = req.body;
+    const room = req.params.id;
     const response = emptyRequest(room) ? emptyRequest(room) : await getRoom(room)
     return res.status(response.code).send(response.body)
 };

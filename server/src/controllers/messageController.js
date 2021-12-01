@@ -2,84 +2,81 @@
  * @namespace Controllers
  */
 /**
- * This Controller file requires {@link module:../services/usersService }  and
+ * This Controller file requires {@link module:../services/messageService }  and
  * {@link module:../tools/Controller/controllerHelper}.
- * @requires module:../services/usersService
+ * @requires module:../services/messageService
  * @requires module:../tools/Controller/controllerHelper
  */
-const {addUser, getUser, updateUser, deleteUser} = require("../services/usersService");
+const {addMessage, getMessage, updateMessage, deleteMessage} = require("../services/messageService");
 const {emptyRequest} = require("../tools/Controller/controllerHelper");
 const types = require("@withvoid/make-validation/lib/validationTypes");
 const makeValidation = require("@withvoid/make-validation");
 
-const checksSignUp = {
+const checksMessage= {
+    id: {type: types.string, options: {empty: false}},
+    message: {type: types.string, options: {empty: false}},
     pseudo: {type: types.string, options: {empty: false}},
-    mail: {type: types.string, options: {empty: false}},
-    password: {type: types.string, options: {empty: false}},
-    type: {type: types.enum, options: {enum: "ADMIN USER", empty: false}}
+    id_room: {type: types.string, options: {empty: false}},
 };
 
-const checksSignIn = {
-    login: {type: types.string, options: {empty: false}},
-    password: {type: types.string, options: {empty: false}},
-};
-
-const checksUpdate = {
+const checksCreateMessage= {
+    message: {type: types.string, options: {empty: false}},
     pseudo: {type: types.string, options: {empty: false}},
-    mail: {type: types.string, options: {empty: false}},
+    id_room: {type: types.string, options: {empty: false}},
 };
 
-const checksDelete = {
+const checksDeleteMessage = {
     id: {type: types.string, options: {empty: false}},
 };
 
-//region post
+//region get
 /**
- * Create a new account on our app, saved in mongoDb
+ * Get Message on our app, saved in mongoDb
  * @function
  * @memberOf Controllers
- * @name signUp
+ * @name getMessage
  * @param {Object.<Request>} req - request received
  * @param {Object.<Response>} res - response to dispatched
  * @param {Function} next - get control to the next middleware function
  * @returns {Promise<*|boolean|void>}
  */
-exports.signUp = async (req, res, next) => {
+exports.getMessage = async (req, res, next) => {
     const validation = makeValidation(types => {
         return ({
             payload: req.body,
-            checks: checksSignUp
+            checks: checksMessage
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-
-    const user = req.body;
-    const response = emptyRequest(user) ? emptyRequest(user) : await addUser(user)
-    res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
+    const message = req.body;
+    const response = emptyRequest(message) ? emptyRequest(message) : await getMessage(message)
     return res.status(response.code).send(response.body)
 };
 
+//region get
+
+//region post
 /**
- * Try to login a user if the mail/pseudo and password match in repository.
+ * Create a new Message on our app, saved in mongoDb
  * @function
  * @memberOf Controllers
- * @name signIn
+ * @name createMessage
  * @param {Object.<Request>} req - request received
  * @param {Object.<Response>} res - response to dispatched
  * @param {Function} next - get control to the next middleware function
  * @returns {Promise<*|boolean|void>}
  */
-exports.signIn = async (req, res, next) => {
+exports.createMessage = async (req, res, next) => {
     const validation = makeValidation(types => {
         return ({
             payload: req.body,
-            checks: checksSignIn
+            checks: checksCreateMessage
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-    const user = req.body;
-    const response = emptyRequest(user) ? emptyRequest(user) : await getUser(user)
-    res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
+
+    const message = req.body;
+    const response = emptyRequest(message) ? emptyRequest(message) : await addMessage(message)
     return res.status(response.code).send(response.body)
 };
 //endregion
@@ -87,28 +84,25 @@ exports.signIn = async (req, res, next) => {
 
 //region patch
 /**
- * Update a user depending on request data.
+ * Update a message depending on request data.
  * @function
  * @memberOf Controllers
- * @name updateUser
+ * @name updateMessage
  * @param {Object.<Request>} req - request received
  * @param {Object.<Response>} res - response to dispatched
  * @param {Function} next - get control to the next middleware function
  * @returns {Promise<*|boolean|void>}
  */
-exports.updateUser = async (req, res, next) => {
+exports.updateMessage = async (req, res, next) => {
     const validation = makeValidation(types => {
         return ({
             payload: req.body,
-            checks: checksUpdate
+            checks: checksMessage
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-    const user = req.body;
-    user.id = req.user._id
-    const response = emptyRequest(user) ? emptyRequest(user) : await updateUser(user)
-
-    res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
+    const message = req.body;
+    const response = emptyRequest(message) ? emptyRequest(message) : await updateMessage(message)
     return res.status(response.code).send(response.body)
 };
 
@@ -116,25 +110,25 @@ exports.updateUser = async (req, res, next) => {
 
 //region delete
 /**
- * delete a user depending on request data.
+ * delete a message depending on request data.
  * @function
  * @memberOf Controllers
- * @name deleteUser
+ * @name deleteMessage
  * @param {Object.<Request>} req - request received
  * @param {Object.<Response>} res - response to dispatched
  * @param {Function} next - get control to the next middleware function
  * @returns {Promise<*|boolean|void>}
  */
-exports.deleteUser = async (req, res, next) => {
+exports.deleteMessage = async (req, res, next) => {
     const validation = makeValidation(types => {
         return ({
             payload: req.body,
-            checks: checksDelete
+            checks: checksDeleteMessage
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-    const user = req.body;
-    const response = emptyRequest(user) ? emptyRequest(user) : await deleteUser(user)
+    const message = req.body;
+    const response = emptyRequest(message) ? emptyRequest(message) : await deleteMessage(message)
     return res.status(response.code).send(response.body)
 };
 

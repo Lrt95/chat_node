@@ -2,17 +2,17 @@
  * @namespace Services
  */
 /**
- * This Service file requires {@link module:../Tools/Services/responseHandler }, {@link module:../Tools/token},
- * {@link module:../Tools/DB/requestOperator} and {@link module:../DB/userRepository}
- * @requires module:../Tools/Services/responseHandler
- * @requires module:../Tools/token
- * @requires module:../Tools/DB/requestOperator
- * @requires module:../DB/userRepository
+ * This Service file requires {@link module:../tools/services/responseHandler }, {@link module:../tools/token},
+ * {@link module:../tools/repository/requestOperator} and {@link module:../repository/userRepository}
+ * @requires module:../tools/services/responseHandler
+ * @requires module:../tools/token
+ * @requires module:../tools/repository/requestOperator
+ * @requires module:../repository/userRepository
  */
-const {getHandler, updateDbHandler} = require("../Tools/Services/responseHandler");
-const {generateAccessToken} = require("../Tools/token")
-const {setUpdateValue} = require('../Tools/Services/requestOperator')
-const {signUp, signIn, updateUserById} = require("../DB/userRepository");
+const {getHandler, updateDbHandler} = require("../tools/Services/responseHandler");
+const {generateAccessToken} = require("../tools/token")
+const {setUpdateValue} = require('../tools/Services/requestOperator')
+const {signUp, signIn, updateUserById, deleteUserById} = require("../repository/userRepository");
 
 
 //region exported functions
@@ -37,7 +37,7 @@ async function getUser(user) {
  * @function
  * @memberOf Services
  * @name addUser
- * @param {object} user - user to add, should be really similar to UserModel {@link '../Models/userModel'}.
+ * @param {object} user - user to add, should be really similar to UserModel {@link '../models/userModel'}.
  * @returns {Promise<{code: number, body: {error: string}}|{code: number, body: {error: *}}|{code: number, body: *}>}
  */
 async function addUser(user) {
@@ -72,14 +72,29 @@ async function updateUser(user) {
  * @memberOf Services
  * @name closeUserAction
  * @param {object} userData - user's data from a response
- * @param {string } [msg= "DB error"] - message to send in body if there is an issue
- * @param {boolean} isSetDb - true if the action should have set DB
+ * @param {string } [msg= "repository error"] - message to send in body if there is an issue
+ * @param {boolean} isSetDb - true if the action should have set repository
  * @returns {{code: number, body: {error: string}}|{code: number, body: *}}
  */
-function closeUserAction(userData,  msg="DB error", isSetDb=true){
+function closeUserAction(userData,  msg="repository error", isSetDb=true){
     generateAccessToken(userData);
     return ( isSetDb ? updateDbHandler(userData , msg, 500) : getHandler(userData , msg, 404)  )
 }
 //endregion
 
-module.exports = {addUser, getUser, updateUser};
+//region post
+/**
+ * Delete a user, that will be add in database.
+ * @function
+ * @memberOf Services
+ * @name deleteUser
+ * @param {object} user - user to delete, should be really similar to UserModel {@link '../models/userModel'}.
+ * @returns {Promise<{code: number, body: {error: string}}|{code: number, body: {error: *}}|{code: number, body: *}>}
+ */
+async function deleteUser(user) {
+    const result = await deleteUserById(user);
+    return getHandler(result , "repository error", 404)
+}
+//endregion
+
+module.exports = {addUser, getUser, updateUser, deleteUser};

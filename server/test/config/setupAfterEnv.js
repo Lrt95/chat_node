@@ -1,8 +1,8 @@
 /**
- * This module requires {@link module:../../Tools/DB/database}.
- * @requires module:../../Tools/DB/database
+ * This module requires {@link module:../../tools/repository/database}.
+ * @requires module:../../tools/repository/database
  */
-const databaseHelper = require('../../src/Tools/DB/database');
+const databaseHelper = require('../../src/tools/DB/database');
 require('dotenv').config();
 
 

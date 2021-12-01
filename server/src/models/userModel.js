@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 /**
- * Our User Model used for mongoDB {@link '../DB/userRepository.js'}.
+ * Our User Model used for mongoDB {@link '../repository/userRepository.js'}.
  * @type {module:mongoose.Schema<any>}
  */
 exports.userSchema = new mongoose.Schema({

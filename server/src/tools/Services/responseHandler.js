@@ -20,7 +20,7 @@ function getHandler(data, notFoundMsg="error, can't find this in database", code
     } else if (data["error"]) {
         return {code: codeErr, body: data}
     } else {
-        return {code: 520, body: {error: "DB error"}}
+        return {code: 520, body: {error: "repository error"}}
     }
 }
 
@@ -43,7 +43,7 @@ function updateDbHandler(data, notFoundMsg="error, can't add this in database", 
     } else if (data["error"]) {
         return {code: codeErr, body: data}
     } else {
-        return {code: 520, body: {error: "DB error"}}
+        return {code: 520, body: {error: "repository error"}}
     }
 }
 

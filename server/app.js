@@ -1,9 +1,9 @@
 /**
- * This file requires {@link module:./Tools/rateLimiter} and {@link module:./router}.
- * @requires module:./Tools/rateLimiter
+ * This file requires {@link module:./tools/rateLimiter} and {@link module:./router}.
+ * @requires module:./tools/rateLimiter
  * @requires module:./router
  */
-const { rateLimiterUsingThirdParty } = require('./src/Tools/rateLimiter');
+const { rateLimiterUsingThirdParty } = require('./src/tools/rateLimiter');
 const router = require("./router");
 const express = require('express');
 const bodyParser = require("body-parser");

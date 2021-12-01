@@ -2,84 +2,92 @@
  * @namespace Controllers
  */
 /**
- * This Controller file requires {@link module:../services/usersService }  and
+ * This Controller file requires {@link module:../services/roomService }  and
  * {@link module:../tools/Controller/controllerHelper}.
- * @requires module:../services/usersService
+ * @requires module:../services/roomService
  * @requires module:../tools/Controller/controllerHelper
  */
-const {addUser, getUser, updateUser, deleteUser} = require("../services/usersService");
+const {addRoom, getAllRooms, getRoom, updateRoom, deleteRoom} = require("../services/roomService");
 const {emptyRequest} = require("../tools/Controller/controllerHelper");
 const types = require("@withvoid/make-validation/lib/validationTypes");
 const makeValidation = require("@withvoid/make-validation");
 
-const checksSignUp = {
-    pseudo: {type: types.string, options: {empty: false}},
-    mail: {type: types.string, options: {empty: false}},
-    password: {type: types.string, options: {empty: false}},
-    type: {type: types.enum, options: {enum: "ADMIN USER", empty: false}}
-};
-
-const checksSignIn = {
-    login: {type: types.string, options: {empty: false}},
-    password: {type: types.string, options: {empty: false}},
-};
-
-const checksUpdate = {
-    pseudo: {type: types.string, options: {empty: false}},
-    mail: {type: types.string, options: {empty: false}},
-};
-
-const checksDelete = {
+const checksRoom= {
     id: {type: types.string, options: {empty: false}},
 };
 
-//region post
+const checksCreateRoom= {
+    name: {type: types.string, options: {empty: false}},
+};
+
+const checksUpdateRoom = {
+    id: {type: types.string, options: {empty: false}},
+    name: {type: types.string, options: {empty: false}},
+};
+
+//region get
 /**
- * Create a new account on our app, saved in mongoDb
+ * Get all rooms on our app, saved in mongoDb
  * @function
  * @memberOf Controllers
- * @name signUp
+ * @name getAllRooms
  * @param {Object.<Request>} req - request received
  * @param {Object.<Response>} res - response to dispatched
  * @param {Function} next - get control to the next middleware function
  * @returns {Promise<*|boolean|void>}
  */
-exports.signUp = async (req, res, next) => {
-    const validation = makeValidation(types => {
-        return ({
-            payload: req.body,
-            checks: checksSignUp
-        });
-    });
-    if (!validation.success) return res.status(400).json(validation);
-
-    const user = req.body;
-    const response = emptyRequest(user) ? emptyRequest(user) : await addUser(user)
-    res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
+exports.getAllRooms = async (req, res, next) => {
+    const response = await getAllRooms()
     return res.status(response.code).send(response.body)
 };
 
 /**
- * Try to login a user if the mail/pseudo and password match in repository.
+ * Get room on our app, saved in mongoDb
  * @function
  * @memberOf Controllers
- * @name signIn
+ * @name getRoom
  * @param {Object.<Request>} req - request received
  * @param {Object.<Response>} res - response to dispatched
  * @param {Function} next - get control to the next middleware function
  * @returns {Promise<*|boolean|void>}
  */
-exports.signIn = async (req, res, next) => {
+exports.getRoom = async (req, res, next) => {
     const validation = makeValidation(types => {
         return ({
-            payload: req.body,
-            checks: checksSignIn
+            payload: req.params,
+            checks: checksRoom
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-    const user = req.body;
-    const response = emptyRequest(user) ? emptyRequest(user) : await getUser(user)
-    res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
+    const room = req.params.id;
+    const response = emptyRequest(room) ? emptyRequest(room) : await getRoom(room)
+    return res.status(response.code).send(response.body)
+};
+
+//region get
+
+//region post
+/**
+ * Create a new room on our app, saved in mongoDb
+ * @function
+ * @memberOf Controllers
+ * @name createRoom
+ * @param {Object.<Request>} req - request received
+ * @param {Object.<Response>} res - response to dispatched
+ * @param {Function} next - get control to the next middleware function
+ * @returns {Promise<*|boolean|void>}
+ */
+exports.createRoom = async (req, res, next) => {
+    const validation = makeValidation(types => {
+        return ({
+            payload: req.body,
+            checks: checksCreateRoom
+        });
+    });
+    if (!validation.success) return res.status(400).json(validation);
+
+    const room = req.body;
+    const response = emptyRequest(room) ? emptyRequest(room) : await addRoom(room)
     return res.status(response.code).send(response.body)
 };
 //endregion
@@ -87,28 +95,25 @@ exports.signIn = async (req, res, next) => {
 
 //region patch
 /**
- * Update a user depending on request data.
+ * Update a room depending on request data.
  * @function
  * @memberOf Controllers
- * @name updateUser
+ * @name updateRoom
  * @param {Object.<Request>} req - request received
  * @param {Object.<Response>} res - response to dispatched
  * @param {Function} next - get control to the next middleware function
  * @returns {Promise<*|boolean|void>}
  */
-exports.updateUser = async (req, res, next) => {
+exports.updateRoom = async (req, res, next) => {
     const validation = makeValidation(types => {
         return ({
             payload: req.body,
-            checks: checksUpdate
+            checks: checksUpdateRoom
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-    const user = req.body;
-    user.id = req.user._id
-    const response = emptyRequest(user) ? emptyRequest(user) : await updateUser(user)
-
-    res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
+    const room = req.body;
+    const response = emptyRequest(room) ? emptyRequest(room) : await updateRoom(room)
     return res.status(response.code).send(response.body)
 };
 
@@ -116,25 +121,25 @@ exports.updateUser = async (req, res, next) => {
 
 //region delete
 /**
- * delete a user depending on request data.
+ * delete a room depending on request data.
  * @function
  * @memberOf Controllers
- * @name deleteUser
+ * @name deleteRoom
  * @param {Object.<Request>} req - request received
  * @param {Object.<Response>} res - response to dispatched
  * @param {Function} next - get control to the next middleware function
  * @returns {Promise<*|boolean|void>}
  */
-exports.deleteUser = async (req, res, next) => {
+exports.deleteRoom = async (req, res, next) => {
     const validation = makeValidation(types => {
         return ({
             payload: req.body,
-            checks: checksDelete
+            checks: checksRoom
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-    const user = req.body;
-    const response = emptyRequest(user) ? emptyRequest(user) : await deleteUser(user)
+    const room = req.body;
+    const response = emptyRequest(room) ? emptyRequest(room) : await deleteRoom(room)
     return res.status(response.code).send(response.body)
 };
 

@@ -1,13 +1,13 @@
 /**
- * @namespace DB
+ * @namespace repository
  */
 /**
- * This file requires {@link module:../Models/userModel}, {@link module:../Tools/DB/userHelper}.
- * @requires module:../Models/userModel
- * @requires module:../Tools/DB/userHelper
+ * This file requires {@link module:../models/userModel}, {@link module:../tools/repository/userHelper}.
+ * @requires module:../models/userModel
+ * @requires module:../tools/repository/userHelper
  */
-const {userSchema} = require("../Models/userModel");
-const {filterPassword} = require("../Tools/DB/userHelper");
+const {userSchema} = require("../models/userModel");
+const {filterPassword} = require("../tools/DB/userHelper");
 const uniqueValidator = require('mongoose-unique-validator')
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -21,7 +21,7 @@ const UserModel = mongoose.model('users', userSchema)
  * depending on login value, and return the result of this try.
  * Login could be mail or pseudo.
  * @function
- * @memberOf DB
+ * @memberOf repository
  * @name signIn
  * @param {object} userData - data to search in database
  * @returns {Promise<{success: *}|{error: Error.ValidationError | {[p: string]: ValidatorError | CastError} | number}>}
@@ -45,9 +45,9 @@ async function signIn(userData) {
 /**
  * Add a new user in database, and return the result of this try
  * @function
- * @memberOf DB
+ * @memberOf repository
  * @name signUp
- * @param {object} userData - user to add, should correspond to userModel {@link '../Models/userModels'}.
+ * @param {object} userData - user to add, should correspond to userModel {@link '../models/userModels'}.
  * @returns {Promise<{success: *}|{error: Error.ValidationError | {[p: string]: ValidatorError | CastError} | number}>}
  */
 async function signUp(userData) {
@@ -64,9 +64,9 @@ async function signUp(userData) {
 /**
  * A generic function used to update a user.
  * @function
- * @memberOf DB
+ * @memberOf repository
  * @name updateUser
- * @param {object} filter - object used by mongoDB to select corresponding documents in DB.
+ * @param {object} filter - object used by mongoDB to select corresponding documents in repository.
  * @param {object} update - object containing fields to set (ex: $set, or $push).
  * @returns {Promise<{success: Object}|{error}>}
  */
@@ -89,7 +89,7 @@ async function updateUser(filter, update) {
 /**
  * Update user's data depending on his ID and wanted fields to set
  * @function
- * @memberOf DB
+ * @memberOf repository
  * @name updateUserById
  * @param {object} data - user's data
  * @param {object} update - object containing fields to set (ex: $set, or $push).
@@ -106,5 +106,25 @@ async function updateUserById(data, update) {
 }
 //endregion
 
+//region get
+/**
+ * Delete room by id.
+ * @function
+ * @memberOf repository
+ * @name deleteUserById
+ * @param {object} userData - data to search in database
+ * @returns {Promise<{success: *}|{error: Error.ValidationError | {[p: string]: ValidatorError | CastError} | number}>}
+ */
+async function deleteUserById(userData) {
+    return await UserModel.deleteOne({_id: userData.id}, { "__v": 0} )
+        .lean()
+        .exec()
+        .then(result => {
+            return {success: result}
+        })
+        .catch(err => {return {error: err.errors}});
+}
+//endregion
 
-module.exports = {signUp, signIn, updateUserById};
+
+module.exports = {signUp, signIn, updateUserById, deleteUserById};

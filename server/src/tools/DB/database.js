@@ -6,7 +6,7 @@ require('dotenv').config();
 
 
 /**
- * Connect to DB for test or production.
+ * Connect to repository for test or production.
  * @function
  * @memberOf Tools
  * @name connect

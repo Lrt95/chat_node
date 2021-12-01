@@ -51,6 +51,7 @@ exports.signUp = async (req, res, next) => {
 
     const user = req.body;
     const response = emptyRequest(user) ? emptyRequest(user) : await addUser(user)
+    res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
     return res.status(response.code).send(response.body)
 };
 
@@ -74,6 +75,7 @@ exports.signIn = async (req, res, next) => {
     if (!validation.success) return res.status(400).json(validation);
     const user = req.body;
     const response = emptyRequest(user) ? emptyRequest(user) : await getUser(user)
+    res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
     return res.status(response.code).send(response.body)
 };
 //endregion
@@ -101,6 +103,8 @@ exports.updateUser = async (req, res, next) => {
     const user = req.body;
     user.id = req.user._id
     const response = emptyRequest(user) ? emptyRequest(user) : await updateUser(user)
+
+    res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
     return res.status(response.code).send(response.body)
 };
 

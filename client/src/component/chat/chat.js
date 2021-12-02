@@ -24,8 +24,12 @@ import SendIcon from '@material-ui/icons/Send';
 import MuiAppBar from '@mui/material/AppBar';
 import {sendMessage} from "../../request/mesageRequest";
 import Moment from "react-moment";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import io from 'socket.io-client'
+import {setUpdateUser} from "../../request/userRequest";
+import Cookies from "universal-cookie";
+import {setUser} from "../../store/reducer/user-reducer";
+
 const socket = io('http://localhost:3050')
 
 const drawerWidth = 240;
@@ -83,14 +87,17 @@ export default function Chat() {
     const [messages, setMessages] = React.useState([]);
     const [message, setMessage] = React.useState("");
     const [text, setText] = React.useState('');
+    const [pseudo, setPseudo] = React.useState('');
     const user = useSelector((state) => state.user.user)
     const messageEl = useRef(null);
+    const dispatch = useDispatch()
+
 
     useEffect(() => {
         if (messageEl) {
             messageEl.current.addEventListener('DOMNodeInserted', event => {
-                const { currentTarget: target } = event;
-                target.scroll({ top: target.scrollHeight, behavior: 'smooth' });
+                const {currentTarget: target} = event;
+                target.scroll({top: target.scrollHeight, behavior: 'smooth'});
             });
         }
     }, [])
@@ -102,19 +109,19 @@ export default function Chat() {
                 setRooms(rooms?.success)
             }
         }
+
         fetchData()
     }, []);
-
 
 
     useEffect(() => {
         socket.off('message')
         socket.on('message', (arg) => {
-            if (room._id === arg.id_room){
+            if (room._id === arg.id_room) {
                 setMessage(arg)
             }
         })
-    },[room]);
+    }, [room]);
 
     useEffect(() => {
         setMessages(messages.concat(message))
@@ -139,12 +146,13 @@ export default function Chat() {
     const handleRoom = (id) => {
         async function fetchData() {
             const room = await getRoom(id);
-            if (room.success){
+            if (room.success) {
                 setRoom(room.success)
                 setTitle(room.success.name)
                 setMessages(room.success.messages)
             }
         }
+
         fetchData();
     }
 
@@ -156,21 +164,36 @@ export default function Chat() {
         })
     }
 
+    const handleSendPseudo = () => {
+        setUpdateUser({
+            "pseudo": pseudo
+        }).then(response => {
+            if (response.success) {
+                new Cookies().set('token-user', response.token)
+                dispatch(setUser(response.success))
+            }
+        })
+    }
+
     const handleChangeText = (event) => {
         setText(event.target.value)
     }
-    
-    const viewMessage = () => {
-      return <>
-          {messages.map((message, index) => {
-             return  <div key={'message' + index} style={{display: 'flex', justifyContent: 'left'}}>
-                 <Typography style={{marginRight: 5}}><Moment format="YYYY/MM/DD hh:mm">{message.createdAt}</Moment>:</Typography>
-                 <Typography style={{marginRight: 5}}>{message.pseudo}</Typography>
-                 <Typography>{message.message}</Typography>
-             </div>
-          })}
 
-      </>
+    const handleChangePseudo = (event) => {
+        setPseudo(event.target.value)
+    }
+
+    const viewMessage = () => {
+        return <>
+            {messages.map((message, index) => {
+                return <div key={'message' + index} style={{display: 'flex', justifyContent: 'left'}}>
+                    <Typography style={{marginRight: 5}}><Moment format="YYYY/MM/DD hh:mm">{message.createdAt}</Moment>:</Typography>
+                    <Typography style={{marginRight: 5}}>{message.pseudo}</Typography>
+                    <Typography>{message.message}</Typography>
+                </div>
+            })}
+
+        </>
     }
 
     return (
@@ -226,15 +249,21 @@ export default function Chat() {
                 </List>
             </Drawer>
             <Main open={open}>
-                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height:'95vh'}}>
+                <div
+                    style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '95vh'}}>
                     <DrawerHeader/>
-                    <div ref={messageEl} style={{height: '100%', overflowY: 'auto'}}>
+                    <div ref={messageEl} style={{height: '100%', marginBottom: 5,overflowY: 'auto'}}>
                         {viewMessage()}
                     </div>
-                    <div style={{display: 'flex', alignItems:'center'}}>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
                         <TextField
                             id="outlined-multiline-static"
-                            label={<Typography style={{fontSize: 16, display:'flex', alignItems:'center', width: '100%'}}>{user.pseudo}</Typography>}
+                            label={<Typography style={{
+                                fontSize: 16,
+                                display: 'flex',
+                                alignItems: 'center',
+                                width: '100%'
+                            }}>{user.pseudo}</Typography>}
                             multiline
                             rows={4}
                             style={{width: '100%', marginRight: 10}}

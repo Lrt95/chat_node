@@ -124,7 +124,7 @@ async function updateRoomById(data, update) {
  * @returns {Promise<{success: *}|{error: Error.ValidationError | {[p: string]: ValidatorError | CastError} | number}>}
  */
 async function deleteRoomById(roomData) {
-    return await RoomModel.deleteOne({_id: roomData}, { "__v": 0} )
+    return await RoomModel.deleteOne({_id: roomData.id}, { "__v": 0} )
         .lean()
         .exec()
         .then(result => {

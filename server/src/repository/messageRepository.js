@@ -25,7 +25,7 @@ const {addMessage} = require("../../chat-server");
  * @returns {Promise<{success: *}|{error: Error.ValidationError | {[p: string]: ValidatorError | CastError} | number}>}
  */
 async function getMessageById(messageData) {
-    return await MessageModel.findOne({_id: messageData}, { "__v": 0} ).lean()
+    return await MessageModel.findOne({_id: messageData.id}, { "__v": 0} ).lean()
         .exec()
         .then(result => {return {success: result}})
         .catch(err => {return {error: err.errors}});
@@ -110,7 +110,7 @@ async function updateMessageById(data, update) {
  * @returns {Promise<{success: *}|{error: Error.ValidationError | {[p: string]: ValidatorError | CastError} | number}>}
  */
 async function deleteMessageById(messageData) {
-    return await MessageModel.deleteOne({_id: messageData}, { "__v": 0} )
+    return await MessageModel.deleteOne({_id: messageData.id}, { "__v": 0} )
         .lean()
         .exec()
         .then(result => {

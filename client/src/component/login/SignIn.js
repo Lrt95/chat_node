@@ -2,18 +2,19 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {setSignIn} from "../../request/userRequest";
-import jsCookie from "js-cookie"
 import {useNavigate} from "react-router-dom";
+import Cookies from "universal-cookie";
+import {useDispatch} from "react-redux";
+import {setUser, test} from "../../store/reducer/user-reducer";
 
 export default function SignIn() {
+    const dispatch = useDispatch()
     let navigate = useNavigate();
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -24,7 +25,8 @@ export default function SignIn() {
         }
         setSignIn(user).then(response => {
             if (response.success) {
-                jsCookie.set('token-user', response.token)
+                new Cookies().set('token-user', response.token)
+                dispatch(setUser(response.success))
                 navigate("/room")
             } else {
                 console.log(JSON.stringify(response.error) || JSON.stringify(response.errors))

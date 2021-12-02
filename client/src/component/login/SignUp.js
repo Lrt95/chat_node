@@ -7,24 +7,28 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@material-ui/core/styles';
 import {setSignUp} from "../../request/userRequest";
-import jsCookie from "js-cookie";
+import Cookies from "universal-cookie";
 import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {setUser} from "../../store/reducer/user-reducer";
 
 const theme = createTheme();
 
 export default function SignUp() {
     let navigate = useNavigate();
+    const dispatch = useDispatch()
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const test = {
+        const user = {
             mail: data.get('mail'),
             pseudo: data.get('pseudo'),
             password: data.get('password'),
             type: 'USER'
         }
-        setSignUp(test).then((response) => {
-            jsCookie.set('token-user', response.token)
+        setSignUp(user).then((response) => {
+            new Cookies().set('token-user', response.token)
+            dispatch(setUser(response.success))
             navigate("/room")
         }).catch(err => {
             console.log(err)

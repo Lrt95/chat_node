@@ -42,7 +42,8 @@ export async function setSignIn(data) {
 }
 
 export async function setUpdateUser(data) {
+    const config = {headers: {'Authorization': 'Bearer ' + new Cookies().get('token-user')}}
     let urlRoutePostSignUp = "http://localhost:3050/api/update-users";
-    console.log(data, urlRoutePostSignUp)
-    return await updateUser(data, urlRoutePostSignUp);
+    console.log(data, urlRoutePostSignUp,config)
+    return await updateUser(data, urlRoutePostSignUp,config);
 }

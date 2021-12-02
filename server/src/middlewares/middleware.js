@@ -18,8 +18,11 @@ const jwt = require("jsonwebtoken");
  * @returns {*}
  */
 function authenticateToken(req, res, next) {
-    const token = req.cookies['token-user']
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    console.log(req.headers)
     if (token == null) return res.sendStatus(401)
+    console.log(token)
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user ) => {
         if (err) return res.sendStatus(403)
         req.user = user.success
@@ -38,7 +41,8 @@ function authenticateToken(req, res, next) {
  * @returns {*}
  */
 function authenticateTokenAdmin(req, res, next) {
-    const token = req.cookies['token-user']
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
     if (token == null) return res.sendStatus(401)
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user ) => {
         if (err) return res.sendStatus(403)

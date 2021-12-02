@@ -1,28 +1,35 @@
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiAppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
+import {useEffect} from "react";
+import {getAllRooms, getRoom} from "../../request/roomRequest";
+import {
+    Button,
+    TextField,
+    ListItem,
+    useTheme,
+    Typography,
+    CssBaseline,
+    Toolbar,
+    IconButton,
+    Drawer,
+    Divider,
+    List,
+    ListItemIcon,
+    ListItemText, styled, Box
+} from "@mui/material";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import ChatIcon from '@mui/icons-material/Chat';
-import {useEffect} from "react";
-import {getAllRooms} from "../../request/roomRequest";
+import MenuIcon from '@mui/icons-material/Menu';
+import SendIcon from '@material-ui/icons/Send';
+import MuiAppBar from '@mui/material/AppBar';
+import {sendMessage} from "../../request/mesageRequest";
+import Moment from "react-moment";
+import {useSelector} from "react-redux";
 
 const drawerWidth = 240;
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
+const Main = styled('main', {shouldForwardProp: (prop) => prop !== 'open'})(
+    ({theme, open}) => ({
         flexGrow: 1,
         padding: theme.spacing(3),
         transition: theme.transitions.create('margin', {
@@ -42,7 +49,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
+})(({theme, open}) => ({
     transition: theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -57,7 +64,7 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
-const DrawerHeader = styled('div')(({ theme }) => ({
+const DrawerHeader = styled('div')(({theme}) => ({
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
@@ -70,13 +77,24 @@ export default function Chat() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [rooms, setRooms] = React.useState([]);
+    const [room, setRoom] = React.useState([]);
+    const [title, setTitle] = React.useState("");
+    const [messages, setMessages] = React.useState([]);
+    const [text, setText] = React.useState('');
+    const user = useSelector((state) => state.user.user)
 
     useEffect(() => {
-        console.log("hello")
         getAllRooms().then(result => {
-            console.log(result)
+            setRooms(result?.success)
         })
     }, []);
+
+    useEffect(() => {
+        if (rooms.length > 0) {
+            setTitle(rooms[0].name)
+            handleRoom(rooms[0]._id)
+        }
+    }, [rooms]);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -86,9 +104,47 @@ export default function Chat() {
         setOpen(false);
     };
 
+    const handleRoom = (id) => {
+        getRoom(id).then(result => {
+            if (result.success) {
+                setRoom(result.success)
+                setTitle(result.success.name)
+                setMessages(result.success.messages)
+            }
+            console.log(result);
+        })
+    }
+
+    const handleSendMessage = () => {
+        sendMessage({
+            "message": text,
+            "pseudo": "Djo",
+            "id_room": room._id
+        })
+    }
+
+    const handleChangeText = (event) => {
+        console.log(event)
+        setText(event.target.value)
+    }
+    
+    const viewMessage = () => {
+      return <>
+          {messages.map((message, index) => {
+             return  <div key={'message' + index} style={{display: 'flex', justifyContent: 'left'}}>
+                 <Typography style={{marginRight: 5}}><Moment format="YYYY/MM/DD hh:mm">{message.createdAt}</Moment>:</Typography>
+                 <Typography style={{marginRight: 5}}>{message.pseudo}</Typography>
+                 <Typography>{message.message}</Typography>
+             </div>
+          })}
+
+      </>
+    }
+
+
     return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
+        <Box sx={{display: 'flex'}}>
+            <CssBaseline/>
             <AppBar position="fixed" open={open}>
                 <Toolbar>
                     <IconButton
@@ -96,12 +152,12 @@ export default function Chat() {
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
                         edge="start"
-                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                        sx={{mr: 2, ...(open && {display: 'none'})}}
                     >
-                        <MenuIcon />
+                        <MenuIcon/>
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        Persistent drawer
+                        {title}
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -118,52 +174,49 @@ export default function Chat() {
                 anchor="left"
                 open={open}
             >
-                <DrawerHeader>
+                <DrawerHeader style={{display: "flex", justifyContent: "space-between"}}>
+                    <Typography>Server</Typography>
                     <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                        {theme.direction === 'ltr' ? <ChevronLeftIcon/> : <ChevronRightIcon/>}
                     </IconButton>
                 </DrawerHeader>
-                <Divider />
+                <Divider/>
                 <List>
-                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                        <ListItem button key={text} onClick={() => console.log(text)}>
+                    {rooms.map((room, index) => (
+                        <ListItem button key={room.name} onClick={() => handleRoom(room._id)}>
                             <ListItemIcon>
-                               <ChatIcon />
+                                <ChatIcon/>
                             </ListItemIcon>
-                            <ListItemText primary={text} />
+                            <ListItemText primary={room.name}/>
                         </ListItem>
                     ))}
                 </List>
             </Drawer>
             <Main open={open}>
-                <DrawerHeader />
-                <Typography paragraph>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-                    enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-                    imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
-                    Convallis convallis tellus id interdum velit laoreet id donec ultrices.
-                    Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-                    adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
-                    nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
-                    leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
-                    feugiat vivamus at augue. At augue eget arcu dictum varius duis at
-                    consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-                    sapien faucibus et molestie ac.
-                </Typography>
-                <Typography paragraph>
-                    Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-                    eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-                    neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-                    tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-                    sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-                    tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-                    gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-                    et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
-                    tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-                    eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-                    posuere sollicitudin aliquam ultrices sagittis orci a.
-                </Typography>
+                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height:'95vh'}}>
+                    <DrawerHeader/>
+                    <div style={{height: '100%', overflowY: 'auto'}}>
+                        {viewMessage()}
+                    </div>
+                    <div style={{display: 'flex', alignItems:'center'}}>
+                        <TextField
+                            id="outlined-multiline-static"
+                            label={user.pseudo}
+                            multiline
+                            rows={4}
+                            style={{width: '100%', marginRight: 10}}
+                            value={text}
+                            placeholder='Ecrivez votre message'
+                            onChange={handleChangeText}
+                            focused
+                        />
+                        <Button variant="contained" style={{height: 60}} onClick={() => handleSendMessage()}>
+                            <SendIcon>
+                            </SendIcon>
+                        </Button>
+
+                    </div>
+                </div>
             </Main>
         </Box>
     );

@@ -61,7 +61,6 @@ async function createRoom(roomData) {
     const doc = new RoomModel(roomData);
     return await doc.save()
         .then(result => {
-            console.log(result)
             return {success: result}
         $})
         .catch(err => {

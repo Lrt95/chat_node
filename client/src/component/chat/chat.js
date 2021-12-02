@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {getAllRooms, getRoom} from "../../request/roomRequest";
 import {
     Button,
@@ -70,7 +70,6 @@ const DrawerHeader = styled('div')(({theme}) => ({
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
 }));
@@ -85,19 +84,41 @@ export default function Chat() {
     const [message, setMessage] = React.useState("");
     const [text, setText] = React.useState('');
     const user = useSelector((state) => state.user.user)
-
+    const messageEl = useRef(null);
 
     useEffect(() => {
-        getAllRooms().then(result => {
-            setRooms(result?.success)
-        })
+        if (messageEl) {
+            messageEl.current.addEventListener('DOMNodeInserted', event => {
+                const { currentTarget: target } = event;
+                target.scroll({ top: target.scrollHeight, behavior: 'smooth' });
+            });
+        }
+    }, [])
+
+    useEffect(() => {
+        async function fetchData() {
+            const rooms = await getAllRooms();
+            if (rooms.success) {
+                setRooms(rooms?.success)
+            }
+        }
+        fetchData()
     }, []);
 
+
+
     useEffect(() => {
+        socket.off('message')
         socket.on('message', (arg) => {
-            setMessages(messages.concat(arg))
+            if (room._id === arg.id_room){
+                setMessage(arg)
+            }
         })
-    }, );
+    },[room]);
+
+    useEffect(() => {
+        setMessages(messages.concat(message))
+    }, [message])
 
     useEffect(() => {
         if (rooms.length > 0) {
@@ -116,18 +137,19 @@ export default function Chat() {
     };
 
     const handleRoom = (id) => {
-        getRoom(id).then(result => {
-            if (result.success) {
-                setRoom(result.success)
-                setTitle(result.success.name)
-                setMessages(result.success.messages)
+        async function fetchData() {
+            const room = await getRoom(id);
+            if (room.success){
+                setRoom(room.success)
+                setTitle(room.success.name)
+                setMessages(room.success.messages)
             }
-            console.log(result);
-        })
+        }
+        fetchData();
     }
 
-    const handleSendMessage = () => {
-        sendMessage({
+    const handleSendMessage = async () => {
+        await sendMessage({
             "message": text,
             "pseudo": user.pseudo,
             "id_room": room._id
@@ -135,7 +157,6 @@ export default function Chat() {
     }
 
     const handleChangeText = (event) => {
-        console.log(event)
         setText(event.target.value)
     }
     
@@ -151,7 +172,6 @@ export default function Chat() {
 
       </>
     }
-
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -194,7 +214,9 @@ export default function Chat() {
                 <Divider/>
                 <List>
                     {rooms.map((room, index) => (
-                        <ListItem button key={room.name} onClick={() => handleRoom(room._id)}>
+                        <ListItem button key={room.name} onClick={() => {
+                            handleRoom(room._id)
+                        }}>
                             <ListItemIcon>
                                 <ChatIcon/>
                             </ListItemIcon>
@@ -206,13 +228,13 @@ export default function Chat() {
             <Main open={open}>
                 <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height:'95vh'}}>
                     <DrawerHeader/>
-                    <div style={{height: '100%', overflowY: 'auto'}}>
+                    <div ref={messageEl} style={{height: '100%', overflowY: 'auto'}}>
                         {viewMessage()}
                     </div>
                     <div style={{display: 'flex', alignItems:'center'}}>
                         <TextField
                             id="outlined-multiline-static"
-                            label={user.pseudo}
+                            label={<Typography style={{fontSize: 16, display:'flex', alignItems:'center', width: '100%'}}>{user.pseudo}</Typography>}
                             multiline
                             rows={4}
                             style={{width: '100%', marginRight: 10}}

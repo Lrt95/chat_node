@@ -6,12 +6,7 @@ export const userSlice = createSlice({
         user: {},
     },
     reducers: {
-        test : (state) => {
-            console.log("toto")
-        },
         setUser: (state, action) => {
-            console.log(state)
-            console.log(action)
             state.user = action.payload
         }
     }

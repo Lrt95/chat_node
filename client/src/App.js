@@ -7,7 +7,8 @@ import React from "react";
 import Rooms from "./component/room/Rooms";
 import SignUp from "./component/login/SignUp";
 
-    function App() {
+
+function App() {
     return (
             <Router>
                 <ThemeProvider theme={mainTheme}>

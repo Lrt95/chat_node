@@ -9,13 +9,16 @@ const database = require("./src/tools/DB/database")
 const http = require("http");
 const {app} = require("./app")
 const {setServerIo} = require('./chat-server')
+const Server = require('socket.io');
 require('dotenv').config();
-
-
 
 database.connect()
 const server = http.createServer(app);
-const io = require('socket.io')(server);
+const io = Server(server, {
+    cors:true,
+    origins:["http://localhost:3000"],
+    credentials: true
+})
 
 var messagessend = [];
 var users = []
@@ -25,6 +28,10 @@ io.on("connection", (socket) => {
     socket.on("create", function (room) {
         socket.join(room)
     });
+
+    socket.on('hello', (arg) => {
+        console.log(JSON.stringify(arg))
+    })
     socket.on("joinRoom", ({ username, roomname }) => {
         const user = join_User(socket.id, username, roomname);
         console.log(socket.id, "=id");
@@ -59,7 +66,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
-        io.to(user.room).emit(`${user.username} has left the room`)
+        // io.to(user.room).emit(`${user.username} has left the room`)
     });
 })
 

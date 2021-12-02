@@ -50,6 +50,7 @@
     "jsdoc-to-markdown": "^7.1.0",
     "mongodb-memory-server": "^8.0.4",
     "nodemon": "^2.0.15",
+    "socket.io": "^4.4.0",
     "supertest": "^6.1.6"
   }
 }

@@ -11,12 +11,18 @@ import {setSignIn} from "../../request/userRequest";
 import {useNavigate} from "react-router-dom";
 import Cookies from "universal-cookie";
 import {useDispatch} from "react-redux";
-import {setUser, test} from "../../store/reducer/user-reducer";
+import {setUser} from "../../store/reducer/user-reducer";
+import {io} from "socket.io-client"
+const socket = io('http://localhost:3050')
+
 
 export default function SignIn() {
     const dispatch = useDispatch()
     let navigate = useNavigate();
     const handleSubmit = async (event) => {
+        socket.on('connect', () => {
+            console.log(socket.id)
+        })
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const user = {

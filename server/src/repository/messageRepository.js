@@ -11,6 +11,8 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const MessageModel = mongoose.model('messages', messageSchema)
 const {updateRoomById} = require('../repository/roomRepository')
+const {addMessage} = require("../../chat-server");
+
 
 
 //region get
@@ -43,6 +45,7 @@ async function createMessage(messageData) {
     const doc = new MessageModel(messageData);
     return await doc.save()
         .then(result => {
+            addMessage(result)
             updateRoomById({id: messageData.id_room}, { $push: {messages: ObjectId(result._id)}})
             return {success: result}
         })

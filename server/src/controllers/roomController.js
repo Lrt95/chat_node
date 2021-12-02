@@ -85,7 +85,6 @@ exports.createRoom = async (req, res, next) => {
         });
     });
     if (!validation.success) return res.status(400).json(validation);
-
     const room = req.body;
     const response = emptyRequest(room) ? emptyRequest(room) : await addRoom(room)
     return res.status(response.code).send(response.body)

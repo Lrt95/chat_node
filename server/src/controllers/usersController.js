@@ -11,7 +11,6 @@ const {addUser, getUser, updateUser, deleteUser} = require("../services/usersSer
 const {emptyRequest} = require("../tools/Controller/controllerHelper");
 const types = require("@withvoid/make-validation/lib/validationTypes");
 const makeValidation = require("@withvoid/make-validation");
-const {io} = require('../../chat-server')
 
 const checksSignUp = {
     pseudo: {type: types.string, options: {empty: false}},
@@ -71,7 +70,6 @@ exports.signUp = async (req, res, next) => {
  * @returns {Promise<*|boolean|void>}
  */
 exports.signIn = async (req, res, next) => {
-    io['room1'].emit('test')
     const validation = makeValidation(types => {
         return ({
             payload: req.body,

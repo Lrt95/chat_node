@@ -6,12 +6,8 @@ import mainTheme from "./assets/style/MainTheme";
 import React from "react";
 import Rooms from "./component/room/Rooms";
 import SignUp from "./component/login/SignUp";
-import io from 'socket.io-client'
-const socket = io('http://localhost:3050')
 
     function App() {
-        console.log(socket)
-        socket.emit("hello" , {hello: "world"})
     return (
             <Router>
                 <ThemeProvider theme={mainTheme}>

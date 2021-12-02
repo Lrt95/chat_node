@@ -25,6 +25,8 @@ import MuiAppBar from '@mui/material/AppBar';
 import {sendMessage} from "../../request/mesageRequest";
 import Moment from "react-moment";
 import {useSelector} from "react-redux";
+import io from 'socket.io-client'
+const socket = io('http://localhost:3050')
 
 const drawerWidth = 240;
 
@@ -80,8 +82,10 @@ export default function Chat() {
     const [room, setRoom] = React.useState([]);
     const [title, setTitle] = React.useState("");
     const [messages, setMessages] = React.useState([]);
+    const [message, setMessage] = React.useState("");
     const [text, setText] = React.useState('');
     const user = useSelector((state) => state.user.user)
+
 
     useEffect(() => {
         getAllRooms().then(result => {
@@ -90,11 +94,18 @@ export default function Chat() {
     }, []);
 
     useEffect(() => {
+        socket.on('message', (arg) => {
+            setMessages(messages.concat(arg))
+        })
+    }, );
+
+    useEffect(() => {
         if (rooms.length > 0) {
             setTitle(rooms[0].name)
             handleRoom(rooms[0]._id)
         }
     }, [rooms]);
+
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -118,7 +129,7 @@ export default function Chat() {
     const handleSendMessage = () => {
         sendMessage({
             "message": text,
-            "pseudo": "Djo",
+            "pseudo": user.pseudo,
             "id_room": room._id
         })
     }

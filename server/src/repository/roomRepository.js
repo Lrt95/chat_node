@@ -9,8 +9,6 @@ const {roomSchema} = require("../models/roomModel");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const RoomModel = mongoose.model('rooms', roomSchema)
-const {socketIo} = require('../../chat-server')
-
 
 //region get
 /**
@@ -63,10 +61,12 @@ async function createRoom(roomData) {
     const doc = new RoomModel(roomData);
     return await doc.save()
         .then(result => {
-            socketIo.emit('create')
+            console.log(result)
             return {success: result}
         $})
-        .catch(err => {return {error: err.errors}})
+        .catch(err => {
+            console.log(err)
+            return {error: err.errors}})
 }
 //endregion
 

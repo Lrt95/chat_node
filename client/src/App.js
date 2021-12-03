@@ -6,6 +6,7 @@ import mainTheme from "./assets/style/MainTheme";
 import React from "react";
 import Rooms from "./component/room/Rooms";
 import SignUp from "./component/login/SignUp";
+import ForgetPassword from "./component/login/forgetPassword";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
                             <Route exact path="/" element={<SignIn/>}/>
                             <Route exact path="/signup" element={<SignUp/>}/>
                             <Route exact path="/room" element={<Rooms/>}/>
+                            <Route exact path='/forgotten-password' element={<ForgetPassword/>}/>
                         </Routes>
                     </div>
                 </ThemeProvider>

@@ -12,7 +12,7 @@
 const {getHandler, updateDbHandler} = require("../tools/Services/responseHandler");
 const {generateAccessToken} = require("../tools/token")
 const {setUpdateValue} = require('../tools/Services/requestOperator')
-const {signUp, signIn, updateUserById, deleteUserById} = require("../repository/userRepository");
+const {signUp, updateUserByEmail, signIn, updateUserById, deleteUserById} = require("../repository/userRepository");
 
 
 //region exported functions
@@ -60,6 +60,18 @@ async function updateUser(user) {
     const userData = await updateUserById(user, setUpdateValue(user, keysToUpdate));
     return closeUserAction(userData, "Can't update this user: any corresponding account found")
 }
+
+async function updatePasswordByEmail(mail, password) {
+    const userData = await updateUserByEmail({mail, password}, {$set: {password}});
+    let response;
+    if (userData.success) {
+        response = {success: "user update"}
+    } else {
+        response = {error: "can't update user"}
+    }
+    return getHandler(response , "error update", 201)
+}
+
 //endregion
 
 //endregion
@@ -97,4 +109,4 @@ async function deleteUser(user) {
 }
 //endregion
 
-module.exports = {addUser, getUser, updateUser, deleteUser};
+module.exports = {addUser, updatePasswordByEmail, getUser, updateUser, deleteUser};

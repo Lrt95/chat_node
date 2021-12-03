@@ -6,7 +6,7 @@
  * @requires module:./models
  */
 const {request, url} = require("./config/launcher")
-const {prepareReqWithCookie, expectedStatus, getBodyRes, expectExcept} = require("./config/testHelper")
+const {expectedStatus, getBodyRes, expectExcept, preparePostReqWithToken, preparePutReqWithToken} = require("./config/testHelper")
 const {user} = require("./models");
 
 /**
@@ -91,8 +91,10 @@ describe('User', () => {
             type: 'ADMIN',
             __v: ''
         }
-        const response = await prepareReqWithCookie(user, url + "update-users")
+        console.log(url)
+        const response = await preparePutReqWithToken(user, url + "update-users")
             .send(userData);
+        console.log(JSON.stringify(response, null, 2))
         expectedStatus(response, 201)
         expect(getBodyRes(response).pseudo).toBe(userData.pseudo)
         expect(getBodyRes(response).mail).toBe(userData.mail)
@@ -114,7 +116,7 @@ describe('User', () => {
             type: 'ADMIN',
             __v: ''
         }
-        const response = await prepareReqWithCookie(user, url + "update-users")
+        const response = await preparePutReqWithToken(user, url + "update-users")
             .send(userData);
         expectedStatus(response, 201)
         expect(getBodyRes(response).pseudo).toBe(userData.pseudo)
@@ -137,7 +139,7 @@ describe('User', () => {
             type: 'ADMIN',
             __v: ''
         }
-        const response = await prepareReqWithCookie(user, url + "update-users")
+        const response = await preparePutReqWithToken(user, url + "update-users")
             .send(userData);
         expectedStatus(response, 201)
         expect(getBodyRes(response).pseudo).toBe(userPseudo)

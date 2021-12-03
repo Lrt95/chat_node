@@ -17,6 +17,7 @@ import {setUser} from "../../store/reducer/user-reducer";
 export default function SignIn() {
     const dispatch = useDispatch()
     let navigate = useNavigate();
+    const [error, setError] = React.useState({});
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -25,12 +26,26 @@ export default function SignIn() {
             password: data.get('password'),
         }
         setSignIn(user).then(response => {
+            console.log(response)
             if (response.success) {
                 new Cookies().set('token-user', response.token)
                 dispatch(setUser(response.success))
                 navigate("/room")
-            } else {
-                console.log(JSON.stringify(response.error) || JSON.stringify(response.errors))
+            } else if (response.error) {
+                if (response.error === 'login incorrect') {
+                    setError({login: 'pseudo ou mail incorrect'})
+                } else if (response.error === 'mot de passe incorrect'){
+                    setError({password: response.error})
+                }
+            } else if (response.errors){
+                if (response.errors?.login) {
+                    setError({login: 'Ne peut pas être vide'})
+                } else if (response.errors?.password) {
+                    setError({password: 'Ne peut pas être vide'})
+                }
+            }
+            else {
+                setError({login: 'Erreur de login', password: 'Erreur de login'})
             }
         })
     };
@@ -51,6 +66,7 @@ export default function SignIn() {
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                     <TextField
+                        error={!!error.login}
                         margin="normal"
                         required
                         fullWidth
@@ -59,8 +75,10 @@ export default function SignIn() {
                         name="login"
                         autoComplete="login"
                         autoFocus
+                        helperText={error.login}
                     />
                     <TextField
+                        error={!!error.password}
                         margin="normal"
                         required
                         fullWidth
@@ -69,6 +87,7 @@ export default function SignIn() {
                         type="password"
                         id="password"
                         autoComplete="current-password"
+                        helperText={error.password}
                     />
                     <Button
                         type="submit"
@@ -80,7 +99,7 @@ export default function SignIn() {
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="#" variant="body2">
+                            <Link href="/forgotten-password" variant="body2">
                                 Forgot password?
                             </Link>
                         </Grid>

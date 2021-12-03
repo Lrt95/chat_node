@@ -162,26 +162,14 @@ export default function Chat() {
             "pseudo": user.pseudo,
             "id_room": room._id
         })
+        setText("")
     }
 
-    const handleSendPseudo = () => {
-        setUpdateUser({
-            "pseudo": pseudo
-        }).then(response => {
-            if (response.success) {
-                new Cookies().set('token-user', response.token)
-                dispatch(setUser(response.success))
-            }
-        })
-    }
 
     const handleChangeText = (event) => {
         setText(event.target.value)
     }
 
-    const handleChangePseudo = (event) => {
-        setPseudo(event.target.value)
-    }
 
     const viewMessage = () => {
         return <>

@@ -7,10 +7,20 @@
  * @requires module:../services/usersService
  * @requires module:../tools/Controller/controllerHelper
  */
-const {addUser, getUser, updateUser, deleteUser} = require("../services/usersService");
-const {emptyRequest} = require("../tools/Controller/controllerHelper");
+const { addUser, updatePasswordByEmail, getUser, updateUser, deleteUser } = require("../services/usersService");
+const { emptyRequest } = require("../tools/Controller/controllerHelper");
 const types = require("@withvoid/make-validation/lib/validationTypes");
 const makeValidation = require("@withvoid/make-validation");
+const nodemailer = require('nodemailer');
+const { generate } = require("password-hash");
+const transporter = nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+    port: 587,
+    auth: {
+        user: 'freddy.ledner12@ethereal.email',
+        pass: 'tr8NXUWQUhCPEw17RD'
+    }
+});
 
 const checksSignUp = {
     pseudo: {type: types.string, options: {empty: false}},
@@ -31,6 +41,10 @@ const checksUpdate = {
 
 const checksDelete = {
     id: {type: types.string, options: {empty: false}},
+};
+
+const checksForgotPassword = {
+    mail: { type: types.string, options: { empty: false } },
 };
 
 //region post
@@ -58,6 +72,32 @@ exports.signUp = async (req, res, next) => {
     res.cookie('token-user', response.body.token , {maxAge: 9000000, httpOnly: true})
     return res.status(response.code).send(response.body)
 };
+
+exports.sendMail = async (req, res, next) => {
+    const validation = makeValidation(types => {
+        return ({
+            payload: req.body,
+            checks: checksForgotPassword
+        });
+    });
+    const {mail} = req.body;
+    const randomPassword = Math.random().toString(36).slice(-8);
+    if (!validation.success) return res.status(400).json(validation);
+    try {
+        await transporter.sendMail({
+            from: 'freddy.ledner12@ethereal.email',
+            to: mail,
+            subject: 'Nouveau password',
+            html: '<h1>Ton nouveau password est </h1>' + randomPassword,
+        });
+    } catch (e){
+        console.log(e)
+    }
+    const passwordhash = generate(randomPassword)
+    console.log(passwordhash)
+    const response = await updatePasswordByEmail(mail , passwordhash)
+    return res.status(response.code).send(response.body)
+}
 
 /**
  * Try to login a user if the mail/pseudo and password match in repository.

@@ -63,7 +63,13 @@ async function updateUser(user) {
 
 async function updatePasswordByEmail(mail, password) {
     const userData = await updateUserByEmail({mail, password}, {$set: {password}});
-    return closeUserAction(userData, "Can't update this user: any corresponding account found")
+    let response;
+    if (userData.success) {
+        response = {success: "user update"}
+    } else {
+        response = {error: "can't update user"}
+    }
+    return getHandler(response , "error update", 201)
 }
 
 //endregion

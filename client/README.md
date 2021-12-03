@@ -6,8 +6,8 @@ First create or log tour account for access to the chat rooms
 
 ## Chat rooms
 
-When your are log and you are in the chat rooms, you are automatically connect to the first room. 
-You can send a message in the fiels text and click on send button to send your message.
+When your are log and you are in the chat rooms, you are automatically connect to the first room.  
+You can send a message in the fiels text and click on send button to send your message.  
 Change room on click to the menu button, and select an other room.
 
 # Getting Started with Create React App

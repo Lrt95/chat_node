@@ -25,7 +25,7 @@ Go to the client folder and install all dependencies required for run the projec
 ### `cd /client && npm start`
 
 Go to the client folder.
-Runs the app in the development mode.\
+Run the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\

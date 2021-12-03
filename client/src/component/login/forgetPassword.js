@@ -8,6 +8,7 @@ import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@material-ui/core/styles';
 import {useNavigate} from "react-router-dom";
 import validator from 'validator'
+import {setNewPassword} from "../../request/userRequest";
 
 const theme = createTheme();
 
@@ -23,9 +24,17 @@ export default function ForgetPassword() {
             setError({mail : 'Ne peut pas être vide'})
         } else if (validator.isEmail(data.get('mail'))) {
             mail = data.get('mail');
+            setNewPassword({mail}).then(result => {
+                if (result.success) {
+                    navigate('/');
+                } else {
+                    console.log(result)
+                }
+            })
         } else {
             setError({mail : 'Doit être un Email'})
         }
+
 
     };
 
@@ -46,7 +55,7 @@ export default function ForgetPassword() {
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                         <TextField
-                            error={false}
+                            error={!!error.mail}
                             margin="normal"
                             required
                             fullWidth
@@ -55,6 +64,7 @@ export default function ForgetPassword() {
                             name="mail"
                             autoComplete="mail"
                             autoFocus
+                            helperText={error.mail}
                         />
                         <Button
                             type="submit"

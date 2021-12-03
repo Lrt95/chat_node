@@ -46,3 +46,8 @@ export async function setUpdateUser(data) {
     let urlRoutePostSignUp = "http://localhost:3050/api/update-users";
     return await updateUser(data, urlRoutePostSignUp,config);
 }
+
+export async function setNewPassword(data) {
+    let urlRoutePostSignUp = "http://localhost:3050/api/forgot-password";
+    return await updateUser(data, urlRoutePostSignUp);
+}

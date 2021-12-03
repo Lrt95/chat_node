@@ -71,6 +71,7 @@ async function signUp(userData) {
  * @returns {Promise<{success: Object}|{error}>}
  */
 async function updateUser(filter, update) {
+    console.log(update)
     return await UserModel
         .findOneAndUpdate(
             filter,
@@ -104,6 +105,15 @@ async function updateUserById(data, update) {
         return {error : "erreur lors de la mise à jour de l'utilisateur"}
     }
 }
+
+async function updateUserByEmail(data, update) {
+    try {
+        return await updateUser({mail: data.mail}, update)
+    }
+    catch (e) {
+        return {error : "erreur lors de la mise à jour de l'utilisateur"}
+    }
+}
 //endregion
 
 //region get
@@ -127,4 +137,4 @@ async function deleteUserById(userData) {
 //endregion
 
 
-module.exports = {signUp, signIn, updateUserById, deleteUserById};
+module.exports = {signUp, signIn, updateUserById, deleteUserById, updateUserByEmail};

@@ -93,16 +93,29 @@ function getUserActivities(res){
  * Prepare a request on a defined url that need a token authorization.
  * @function
  * @memberOf Test_helper
- * @name prepareReqWithCookie
+ * @name preparePostReqWithToken
  * @param {object} user - user's data from a response
  * @param {object} completeUrl - the target url
  * @returns {*}
  */
-function prepareReqWithCookie(user, completeUrl){
-
+function preparePostReqWithToken(user, completeUrl){
     return request.post(completeUrl)
-        .set('Cookie', [`token-user=${user.body.token}`])
+        .set('Authorization', 'Bearer ' + user.body.token)
+}
+
+/**
+ * Prepare a request on a defined url that need a token authorization.
+ * @function
+ * @memberOf Test_helper
+ * @name preparePutReqWithToken
+ * @param {object} user - user's data from a response
+ * @param {object} completeUrl - the target url
+ * @returns {*}
+ */
+function preparePutReqWithToken(user, completeUrl){
+    return request.put(completeUrl)
+        .set('Authorization', 'Bearer ' + user.body.token)
 }
 //endregion
 
-module.exports = {expectExcept, getBodyRes, expectedStatus, prepareReqWithCookie}
+module.exports = {expectExcept, getBodyRes, expectedStatus, preparePostReqWithToken, preparePutReqWithToken}

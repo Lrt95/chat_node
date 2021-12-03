@@ -6,54 +6,25 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@material-ui/core/styles';
-import {setSignUp} from "../../request/userRequest";
-import Cookies from "universal-cookie";
 import {useNavigate} from "react-router-dom";
-import {useDispatch} from "react-redux";
-import {setUser} from "../../store/reducer/user-reducer";
 import validator from 'validator'
 
 const theme = createTheme();
 
-export default function SignUp() {
+export default function ForgetPassword() {
     let navigate = useNavigate();
-    const dispatch = useDispatch()
     const [error, setError] = React.useState({});
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const user = {type: 'USER'}
+        let mail = ''
         const data = new FormData(event.currentTarget);
-
         if (data.get('mail') === '') {
             setError({mail : 'Ne peut pas être vide'})
         } else if (validator.isEmail(data.get('mail'))) {
-            user['mail'] = data.get('mail');
+            mail = data.get('mail');
         } else {
             setError({mail : 'Doit être un Email'})
-        }
-
-        if (data.get('pseudo') === '') {
-            setError({pseudo: 'Ne peut pas être vide'})
-        } else {
-            user['pseudo'] = data.get('pseudo')
-        }
-
-        if (data.get('password') === '') {
-            setError({password: 'Ne peut pas être vide'})
-        } else {
-            user['password'] = data.get('password')
-        }
-
-        if (Object.keys(user).length === 4) {
-            setSignUp(user).then((response) => {
-                new Cookies().set('token-user', response.token)
-                dispatch(setUser(response.success))
-                navigate("/room")
-            }).catch(err => {
-                    console.log(err)
-                }
-            )
         }
 
     };
@@ -71,11 +42,11 @@ export default function SignUp() {
                     }}
                 >
                     <Typography component="h1" variant="h5">
-                        Sign up
+                        Mot de passe oublié
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                         <TextField
-                            error={!!error.mail}
+                            error={false}
                             margin="normal"
                             required
                             fullWidth
@@ -84,31 +55,6 @@ export default function SignUp() {
                             name="mail"
                             autoComplete="mail"
                             autoFocus
-                            helperText={error.mail}
-                        />
-                        <TextField
-                            error={!!error.pseudo}
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="pseudo"
-                            label="User Name"
-                            name="pseudo"
-                            autoComplete="pseudo"
-                            autoFocus
-                            helperText={error.pseudo}
-                        />
-                        <TextField
-                            error={!!error.password}
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            helperText={error.password}
                         />
                         <Button
                             type="submit"
@@ -116,7 +62,7 @@ export default function SignUp() {
                             variant="contained"
                             sx={{mt: 3, mb: 2}}
                         >
-                            Sign Up
+                            Send
                         </Button>
                     </Box>
                 </Box>
